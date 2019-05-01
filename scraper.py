@@ -27,6 +27,7 @@ def get_links(page):
 wiki_wiki = wikipediaapi.Wikipedia('en')
 
 input_page = input("Page to search: ")
+
 # lets start by statically setting our starter page to 'dog'
 start_page = wiki_wiki.page(input_page)
 if start_page.exists() != True:
@@ -36,18 +37,26 @@ if start_page.exists() != True:
 g = pydot.Dot(graph_type="digraph")
 
 node = pydot.Node(start_page.title, style="filled", fillcolor="red")
+# add the starter page as a node
 g.add_node(node)
 
 link_pages = get_links(start_page)
 # now get the first five links off of the links pages
 for link_page in link_pages:
+    node = pydot.Node(link_page.title, style="filled", fillcolor="red")
+    g.add_node(node)
+    edge = pydot.Edge(start_page.title, link_page.title)
+    g.add_edge(edge)
+    
+    # now add the sub-pages of these links
     sub_link_pages = get_links(link_page)
     for s_page in sub_link_pages:
         # create a node for each sub page
-        node = pydot.Node(s_page.title, style="filled", fillcolor="yellow")
+        node = pydot.Node(s_page.title, style="filled", fillcolor="red")
         g.add_node(node)
-        edge = pydot.Edge(start_page.title, s_page.title)
+        edge = pydot.Edge(link_page.title, s_page.title)
         g.add_edge(edge)
+    
 
 g.write_png('example1.png')
 
